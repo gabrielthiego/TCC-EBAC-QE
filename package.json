@@ -1,0 +1,29 @@
+{
+  "name": "tcc-ebac-qe",
+  "version": "1.0.0",
+  "description": "modulo 34 TCC da EBAC",
+  "keywords": [
+    "cypress",
+    "testes",
+    "qualidade",
+    "ebac"
+  ],
+  "homepage": "https://github.com/gabrielthiego/TCC-EBAC-QE#readme",
+  "bugs": {
+    "url": "https://github.com/gabrielthiego/TCC-EBAC-QE/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielthiego/TCC-EBAC-QE.git"
+  },
+  "license": "ISC",
+  "author": "Gabriel Thiego",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "cypress": "^14.5.0"
+  }
+}
