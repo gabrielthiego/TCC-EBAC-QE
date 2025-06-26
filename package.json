@@ -1,7 +1,7 @@
 {
   "name": "tcc-ebac-qe",
   "version": "1.0.0",
-  "description": "modulo 34 TCC da EBAC",
+  "description": "Módulo 34 - TCC da EBAC",
   "keywords": [
     "cypress",
     "testes",
@@ -21,9 +21,14 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Use 'npm run test:ui' ou 'npm run test:api'\"",
+    "test:ui": "cypress open",
+    "test:ui:headless": "cypress run",
+    "test:api": "jest"
   },
   "devDependencies": {
-    "cypress": "^14.5.0"
+    "cypress": "^14.5.0",
+    "jest": "^30.0.3",
+    "supertest": "^7.1.1"
   }
 }
