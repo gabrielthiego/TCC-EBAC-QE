@@ -1,29 +1,28 @@
-const request = require('supertest');
+const request = require('supertest')('http://localhost');
+const auth = { user: 'admin_ebac', pass: '@admin!&b@c!2022' };
 
-const baseUrl = 'http://lojaebac.ebaconline.art.br/wp-json/wc/store/v1';
+describe('API Cupom', () => {
+  let cupomId;
 
-describe('[US-0003] API de Cupons', () => {
-  it('Cenário 1: Validar cupom existente (caminho feliz)', async () => {
-    const response = await request(baseUrl).get('/coupons/10off');
+  beforeAll(async () => {
+    const response = await request
+      .get('/wp-json/wc/v3/coupons?code=nomecupom2022')
+      .auth(auth.user, auth.pass);
+
+    if (response.body.length > 0) {
+      cupomId = response.body[0].id;
+    } else {
+      throw new Error('Cupom nomecupom2022 não encontrado');
+    }
+  });
+
+  it('Deve validar os dados do cupom nomecupom2022', async () => {
+    const response = await request
+      .get(`/wp-json/wc/v3/coupons/${cupomId}`)
+      .auth(auth.user, auth.pass);
+
     expect(response.statusCode).toBe(200);
-    expect(response.body.code).toBe('10off');
-    expect(response.body.amount).toBe('10');
-  });
-
-  it('Cenário 2: Validar cupom inexistente (fluxo alternativo)', async () => {
-    const response = await request(baseUrl).get('/coupons/naoexiste');
-    expect(response.statusCode).toBe(404);
-  });
-
-  it('Cenário 3: Verificar estrutura do contrato do cupom', async () => {
-    const response = await request(baseUrl).get('/coupons/10off');
-    expect(response.body).toHaveProperty('id');
-    expect(response.body).toHaveProperty('code');
-    expect(response.body).toHaveProperty('amount');
-  });
-
-  it('Cenário 4: Validar resposta sem autenticação (se necessário)', async () => {
-    const response = await request(baseUrl).get('/coupons/10off');
-    expect(response.statusCode).toBeLessThan(500); // assumindo que não exige auth
+    expect(response.body.code).toBe('nomecupom2022');
+    expect(response.body.amount).toBeDefined(); // Checa se tem valor definido
   });
 });

@@ -1,0 +1,44 @@
+name: Testes TCC EBAC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Docker containers
+        run: |
+          docker network create --attachable ebac-network || true
+          docker run -d --name wp_db -p 3306:3306 --network ebac-network ernestosbarbosa/lojaebacdb:latest
+          docker run -d --name wp -p 80:80 --network ebac-network ernestosbarbosa/lojaebac:latest
+          sleep 30
+
+      - name: Run API tests (Jest)
+        run: npm run test:api
+
+      - name: Run UI tests (Cypress)
+        run: npx cypress run
+
+      - name: Stop Docker containers
+        run: |
+          docker stop wp wp_db
+          docker rm wp wp_db
+          docker network rm ebac-network || true

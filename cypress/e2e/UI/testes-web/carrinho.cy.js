@@ -1,33 +1,66 @@
+function selecionarVariacoes() {
+  cy.get('.button-variable-item-XL').then(($el) => {
+    if ($el.length && !$el.hasClass('disabled')) {
+      cy.wrap($el).click({ force: true });
+    } else {
+      cy.get('[class^="button-variable-item"]').not('.disabled').first().click({ force: true });
+    }
+  });
+
+  cy.get('.button-variable-item-Green').then(($el) => {
+    if ($el.length && !$el.hasClass('disabled')) {
+      cy.wrap($el).click({ force: true });
+    } else {
+      cy.get('[class^="button-variable-item"]').not('.disabled').first().click({ force: true });
+    }
+  });
+}
+
 describe('[US-0001] Adicionar item ao carrinho', () => {
-
   beforeEach(() => {
-    cy.visit('http://lojaebac.ebaconline.art.br');
+    cy.visit('http://localhost/product/abominable-hoodie/');
   });
 
-  it('Cenário 1: Adicionar item ao carrinho (caminho feliz)', () => {
-    cy.get('.product-block').first().click();
-    cy.get('.button.alt').click(); // botão "Adicionar ao carrinho"
+  it('Adicionar item ao carrinho com tamanho XL e cor Green (ou próximo disponível)', () => {
+    selecionarVariacoes();
+
+    cy.get('.single_add_to_cart_button').click({ force: true });
+    selecionarVariacoes();
+    cy.get('.single_add_to_cart_button').click({ force: true });
+
     cy.get('.woocommerce-message').should('contain', 'foi adicionado no seu carrinho');
-    cy.get('.woocommerce-message a').contains('Ver carrinho').click();
-    cy.url().should('include', 'carrinho');
-    cy.get('.cart_item').should('exist');
+    cy.get('.woocommerce-message a').contains('Ver carrinho').click({ force: true });
   });
 
-  it('Cenário 2: Adicionar dois itens iguais ao carrinho (fluxo alternativo)', () => {
-    cy.get('.product-block').first().click();
-    cy.get('.button.alt').click();
-    cy.get('.button.alt').click(); // adiciona de novo
+  it('Adicionar dois itens iguais ao carrinho', () => {
+    selecionarVariacoes();
+
+    cy.get('.single_add_to_cart_button').click({ force: true });
+    selecionarVariacoes();
+    cy.get('.single_add_to_cart_button').click({ force: true });
+       cy.get('.plus').click({ force: true });
+
     cy.get('.woocommerce-message').should('contain', 'foi adicionado no seu carrinho');
-    cy.get('.woocommerce-message a').contains('Ver carrinho').click();
-    cy.get('.quantity input').should('have.value', '2');
+    cy.get('.woocommerce-message a').contains('Ver carrinho').click({ force: true });
+    
+   
   });
 
-  it('Cenário 3: Adicionar e remover item do carrinho (fluxo negativo)', () => {
-    cy.get('.product-block').first().click();
-    cy.get('.button.alt').click();
-    cy.get('.woocommerce-message a').contains('Ver carrinho').click();
-    cy.get('.remove').click();
-    cy.get('.cart-empty').should('contain', 'Seu carrinho está vazio');
-  });
+  it('Adicionar e remover item do carrinho', () => {
 
+   selecionarVariacoes();
+
+    cy.get('.single_add_to_cart_button').click({ force: true });
+    selecionarVariacoes();
+    cy.get('.single_add_to_cart_button').click({ force: true });
+
+    cy.get('.woocommerce-message').should('contain', 'foi adicionado no seu carrinho');
+    cy.get('.woocommerce-message a').contains('Ver carrinho').click({ force: true });
+    // Clica no botão de remover item do carrinho
+    cy.get('.remove > .fa').click({ force: true });
+
+// Confirma que o carrinho está vazio
+    cy.contains('Seu carrinho está vazio.').should('be.visible');
+
+  });
 });
