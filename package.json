@@ -21,10 +21,10 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Use 'npm run test:ui' ou 'npm run test:api'\"",
+    "test": "npm run test:api && npm run test:ui:headless",
+    "test:api": "jest",
     "test:ui": "cypress open",
-    "test:ui:headless": "cypress run",
-    "test:api": "jest"
+    "test:ui:headless": "cypress run"
   },
   "devDependencies": {
     "cypress": "^14.5.0",

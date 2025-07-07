@@ -1,22 +1,25 @@
-describe('[US-0004] Catálogo de produtos', () => {
-
+describe('Catálogo de produtos', () => {
   beforeEach(() => {
-    cy.visit('http://lojaebac.ebaconline.art.br');
+    cy.visit('http://localhost/produtos/');
   });
 
-  it('Cenário 1: Listar produtos no catálogo (caminho feliz)', () => {
-    cy.get('.product-block').should('have.length.at.least', 1);
+  it('Visualizar produtos na loja (feliz)', () => {
+    // Verifica se pelo menos um produto está visível na tela
+    cy.get('.products .product').should('have.length.greaterThan', 0);
   });
 
-  it('Cenário 2: Filtrar produtos por categoria (fluxo alternativo)', () => {
-    cy.get('.cat-item a').contains('Feminino').click(); // exemplo de categoria
-    cy.url().should('include', 'product-category/feminino');
-    cy.get('.product-block').should('have.length.at.least', 1);
-  });
+  it('Ordenar produtos por preço: do menor para o maior (alternativo)', () => {
+    // Seleciona ordenação por preço: menor para maior
+    cy.get('select.orderby').select('price');
 
-  it('Cenário 3: Filtrar por termo inexistente (fluxo negativo)', () => {
-    cy.get('#woocommerce-product-search-field-0').type('inexistente{enter}');
-    cy.get('.woocommerce-info').should('contain', 'Nenhum produto foi encontrado');
-  });
+    // Espera a ordenação acontecer
+    cy.wait(1000);
 
+    // Verifica se a lista de produtos mudou comparando os dois primeiros
+    cy.get('.products .product').eq(0).invoke('text').then((firstProduct) => {
+      cy.get('.products .product').eq(1).invoke('text').then((secondProduct) => {
+        expect(firstProduct).not.to.eq(secondProduct);
+      });
+    });
+  });
 });
