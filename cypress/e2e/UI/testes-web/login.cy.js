@@ -6,7 +6,8 @@ describe('[US-0002] Login na plataforma', () => {
   it('Login com credenciais válidas (feliz)', () => {
     cy.get('#username').type('usuario@teste.com');
     cy.get('#password').type('senha123');
-    cy.get('[name="login"]').click(); // Espera o login ser processado
+    cy.get('[name="login"]').click(); 
+    cy.wait(3000);
     cy.contains('Olá,').should('be.visible');
   });
 

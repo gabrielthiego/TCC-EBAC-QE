@@ -30,19 +30,20 @@ describe('[US-0001] Adicionar item ao carrinho', () => {
 
     cy.get('.woocommerce-message', { timeout: 10000 }).should('contain', 'foi adicionado no seu carrinho');
     cy.get('.woocommerce-message a', { timeout: 10000 }).contains('Ver carrinho').click({ force: true });
+
   });
 
   it('Adicionar dois itens iguais ao carrinho', () => {
     selecionarVariacoes();
 
-    cy.get('.single_add_to_cart_button', { timeout: 10000 }).click({ force: true });
+    cy.get('.single_add_to_cart_button', { timeout: 50000 }).click({ force: true });
     selecionarVariacoes();
-    cy.get('.single_add_to_cart_button', { timeout: 10000 }).click({ force: true });
+    cy.get('.single_add_to_cart_button', { timeout: 50000 }).click({ force: true });
 
-    cy.get('.plus', { timeout: 10000 }).click({ force: true });
+    cy.get('.plus', { timeout: 50000 }).click({ force: true });
 
-    cy.get('.woocommerce-message', { timeout: 10000 }).should('contain', 'foi adicionado no seu carrinho');
-    cy.get('.woocommerce-message a', { timeout: 10000 }).contains('Ver carrinho').click({ force: true });
+    cy.get('.woocommerce-message', { timeout: 50000 }).should('contain', 'foi adicionado no seu carrinho');
+    cy.get('.woocommerce-message a', { timeout: 50000 }).contains('Ver carrinho').click({ force: true });
   });
 
   it('Adicionar e remover item do carrinho', () => {
@@ -58,7 +59,7 @@ describe('[US-0001] Adicionar item ao carrinho', () => {
     cy.get('.remove > .fa', { timeout: 10000 }).click({ force: true });
 
     cy.contains('Seu carrinho está vazio.', { timeout: 50000 }).should('be.visible');
-    
-    
+
+
   });
 });

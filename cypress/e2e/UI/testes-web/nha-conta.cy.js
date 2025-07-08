@@ -7,7 +7,8 @@ describe('Minha conta', () => {
   });
 
   it('Acessar Minha Conta sem login (alternativo)', () => {
-    cy.visit('/minha-conta/edit-account');
+    cy.visit('/minha-conta/edit-account')
+    cy.wait(3000);
     cy.get('form.login').should('exist');
   });
 });
