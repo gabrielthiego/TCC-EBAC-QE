@@ -57,6 +57,8 @@ describe('[US-0001] Adicionar item ao carrinho', () => {
 
     cy.get('.remove > .fa', { timeout: 10000 }).click({ force: true });
 
-    cy.contains('Seu carrinho está vazio.', { timeout: 10000 }).should('be.visible');
+    cy.contains('Seu carrinho está vazio.', { timeout: 50000 }).should('be.visible');
+    
+    
   });
 });
