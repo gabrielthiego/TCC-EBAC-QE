@@ -27,6 +27,7 @@
     "test:ui:headless": "cypress run"
   },
   "devDependencies": {
+    "@wdio/cli": "^9.17.1",
     "cypress": "^14.5.0",
     "jest": "^30.0.3",
     "supertest": "^7.1.1"
