@@ -23,6 +23,6 @@ describe('API Cupom', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.code).toBe('nomecupom2022');
-    expect(response.body.amount).toBeDefined(); // Checa se tem valor definido
+    expect(response.body.amount).toBeDefined();
   });
 });

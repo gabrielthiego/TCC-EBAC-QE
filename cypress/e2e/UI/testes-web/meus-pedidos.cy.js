@@ -4,9 +4,7 @@ describe('Meus pedidos', () => {
   });
 
   it('Listar pedidos após login (feliz)', () => {
-    cy.get('#username').type('usuario@teste.com');
-    cy.get('#password').type('senha123');
-    cy.get('[name="login"]').click();
+    cy.loginPadrao();  // comando customizado, sem precisar digitar usuário e senha aqui
 
     cy.visit('http://localhost/minha-conta/orders/');
     cy.get('table.my_account_orders').should('exist');
