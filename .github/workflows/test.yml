@@ -12,9 +12,36 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      USERNAME: ${{ secrets.USERNAME }}
-      PASSWORD: ${{ secrets.PASSWORD }}
+    services:
+      db:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      wordpress:
+        image: ernestosbarbosa/lojaebac:latest
+        env:
+          WORDPRESS_DB_HOST: localhost:3306
+          WORDPRESS_DB_USER: user
+          WORDPRESS_DB_PASSWORD: password
+          WORDPRESS_DB_NAME: wordpress
+        ports:
+          - 80:80
+        options: >-
+          --health-cmd="curl -f http://localhost/wp-json || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout do código
@@ -26,12 +53,22 @@ jobs:
           node-version: '18'
 
       - name: Instalar dependências
+        run: npm install
+
+      - name: Esperar serviços estarem prontos
         run: |
-          npm install
-          chmod +x ./node_modules/.bin/jest
+          echo "Esperando WordPress e MySQL subirem..."
+          for i in {1..30}; do
+            curl -f http://localhost/wp-json && break
+            echo "Ainda não está pronto, esperando 5s..."
+            sleep 5
+          done
 
       - name: Rodar testes de API com Jest
+        env:
+          USERNAME: admin_ebac
+          PASSWORD: '@admin!&b@c!2022'
         run: npm run test:api
 
       - name: Rodar testes de UI com Cypress (headless)
-        run: npm run test:ui
+        run: npm run test:ui:headless
