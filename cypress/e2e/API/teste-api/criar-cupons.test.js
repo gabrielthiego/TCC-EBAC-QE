@@ -1,15 +1,15 @@
+require('dotenv').config();
 const request = require('supertest');
 
 const auth = {
-  user: 'admin_ebac',
-  pass: '@admin!&b@c!2022',
+  user: process.env.USERNAME,
+  pass: process.env.PASSWORD,
 };
 
 const api = request('http://localhost/wp-json/wc/v3');
 
-// Função para gerar código aleatório
 function gerarCodigoCupom(prefixo = 'cupom') {
-  const sufixo = Math.random().toString(36).substring(2, 8); // Ex: 'a1b2c3'
+  const sufixo = Math.random().toString(36).substring(2, 8);
   return `${prefixo}_${sufixo}`;
 }
 
