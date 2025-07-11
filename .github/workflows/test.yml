@@ -1,37 +1,47 @@
-name: Run Tests
+name: Testes CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  cypress-tests:
+  test:
     runs-on: ubuntu-latest
+
+    env:
+      USERNAME: ${{ secrets.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+
     steps:
-      - name: Checkout repo
+      - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '18'
 
-      - name: Install dependencies
+      - name: Instalar dependências
         run: npm install
 
-      - name: Start local server
+      - name: Corrigir permissão do jest
+        run: chmod +x ./node_modules/.bin/jest
+
+      - name: Iniciar containers Docker
         run: |
           docker network create --attachable ebac-network || true
           docker run -d --name wp_db -p 3306:3306 --network ebac-network ernestosbarbosa/lojaebacdb:latest
           docker run -d --name wp -p 80:80 --network ebac-network ernestosbarbosa/lojaebac:latest
-        # dá um tempinho para o WP subir
-      - name: Wait for server
+
+      - name: Aguardar WordPress subir
         run: sleep 30
 
-      - name: Run API tests
+      - name: Rodar testes de API com Jest
         run: npm run test:api
 
-      - name: Run Cypress UI tests
+      - name: Rodar testes UI com Cypress (headless)
         run: npm run test:ui
