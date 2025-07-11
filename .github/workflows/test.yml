@@ -1,74 +1,37 @@
-name: Testes CI
+name: Run Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  test:
+  cypress-tests:
     runs-on: ubuntu-latest
-
-    services:
-      db:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: wordpress
-          MYSQL_USER: user
-          MYSQL_PASSWORD: password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-      wordpress:
-        image: ernestosbarbosa/lojaebac:latest
-        env:
-          WORDPRESS_DB_HOST: localhost:3306
-          WORDPRESS_DB_USER: user
-          WORDPRESS_DB_PASSWORD: password
-          WORDPRESS_DB_NAME: wordpress
-        ports:
-          - 80:80
-        options: >-
-          --health-cmd="curl -f http://localhost/wp-json || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
-      - name: Checkout do código
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
-      - name: Instalar dependências
+      - name: Install dependencies
         run: npm install
 
-      - name: Esperar serviços estarem prontos
+      - name: Start local server
         run: |
-          echo "Esperando WordPress e MySQL subirem..."
-          for i in {1..30}; do
-            curl -f http://localhost/wp-json && break
-            echo "Ainda não está pronto, esperando 5s..."
-            sleep 5
-          done
+          docker network create --attachable ebac-network || true
+          docker run -d --name wp_db -p 3306:3306 --network ebac-network ernestosbarbosa/lojaebacdb:latest
+          docker run -d --name wp -p 80:80 --network ebac-network ernestosbarbosa/lojaebac:latest
+        # dá um tempinho para o WP subir
+      - name: Wait for server
+        run: sleep 30
 
-      - name: Rodar testes de API com Jest
-        env:
-          USERNAME: admin_ebac
-          PASSWORD: '@admin!&b@c!2022'
+      - name: Run API tests
         run: npm run test:api
 
-      - name: Rodar testes de UI com Cypress (headless)
-        run: npm run test:ui:headless
+      - name: Run Cypress UI tests
+        run: npm run test:ui
