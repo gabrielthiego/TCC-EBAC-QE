@@ -1,5 +1,26 @@
-{
-  "name": "Using fixtures to represent data",
-  "email": "hello@cypress.io",
-  "body": "Fixtures are a great way to mock data for responses to routes"
-}
+describe('Catálogo de Produtos - Mobile', () => {
+  before(async () => {
+    await driver.launchApp();
+  });
+
+  it('Deve carregar a lista de produtos', async () => {
+    const catalogButton = await $('~catalog-button'); // seletor de exemplo
+    await catalogButton.click();
+
+    const productList = await $$('~product-item'); // lista de produtos
+    expect(productList.length).toBeGreaterThan(0);
+  });
+
+  it('Deve permitir rolar a lista de produtos', async () => {
+    const productList = await $('~product-list');
+    await productList.touchAction([
+      { action: 'press', x: 100, y: 600 },
+      { action: 'moveTo', x: 100, y: 100 },
+      'release'
+    ]);
+    
+    // Verificar se a rolagem aconteceu, por exemplo, checar um produto que aparece só após rolar
+    const lastProduct = await $('~product-item-last');
+    expect(await lastProduct.isDisplayed()).toBe(true);
+  });
+});

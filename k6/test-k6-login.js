@@ -9,11 +9,11 @@ export const options = {
   ],
 };
 
-const loginUrl = 'http://localhost/wp-json/jwt-auth/v1/token';
+const loginUrl = 'http://localhost:8000/wp-json/jwt-auth/v1/token';
 
 const payload = JSON.stringify({
-  username: 'tccebac',
-  password: 'tccebac',
+  username: 'ebactcc',
+  password: 'ebactcc',
 });
 
 const params = {
@@ -29,9 +29,9 @@ export default function () {
     'login status 200': (r) => r.status === 200,
     'received token': (r) => {
       const body = r.json();
-      return body && body.data && typeof body.data.token === 'string' && body.data.token.length > 10;
+      return body && body.token && body.token.length > 10;
     },
   });
 
-  console.log(res.body); // mostra a resposta bruta no terminal
+  console.log(res.body);
 }

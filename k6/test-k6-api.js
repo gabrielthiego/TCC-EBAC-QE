@@ -3,23 +3,39 @@ import { check } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '20s', target: 20 },  // ramp-up 20 usuários
-    { duration: '1m40s', target: 20 }, // manter 20 usuários
-    { duration: '30s', target: 0 },    // ramp-down
+    { duration: '20s', target: 20 },
+    { duration: '1m40s', target: 20 },
+    { duration: '30s', target: 0 },
   ],
 };
 
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0IiwiaWF0IjoxNzUyMDgzNDg1LCJuYmYiOjE3NTIwODM0ODUsImV4cCI6MTc1MjY4ODI4NSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.mgPlmk1SoX5CoYyk2jZf4Dw_HwYl70hpxSei8J31Po4';
+const loginUrl = 'http://localhost:8000/wp-json/jwt-auth/v1/token';
+const apiUrl = 'http://localhost:8000/wp-json/wc/v3/coupons';
 
 export default function () {
-  const url = 'http://localhost/wp-json/wp/v2/posts';
-  const res = http.get(url, {
+  // Login para pegar token
+  const loginPayload = JSON.stringify({ username: 'ebactcc', password: 'ebactcc' });
+  const loginParams = { headers: { 'Content-Type': 'application/json' } };
+
+  const loginRes = http.post(loginUrl, loginPayload, loginParams);
+  check(loginRes, { 'login status 200': (r) => r.status === 200 });
+
+  const token = loginRes.json('token');
+  if (!token) {
+    console.error('Token não recebido');
+    return;
+  }
+
+  // Requisição protegida com token dinâmico
+  const apiParams = {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
-  });
+  };
 
-  check(res, {
-    'GET posts status 200': (r) => r.status === 200,
-  });
+  const res = http.get(apiUrl, apiParams);
+  check(res, { 'API status 200': (r) => r.status === 200 });
+
+  console.log(`Resposta API: ${res.status}`);
 }

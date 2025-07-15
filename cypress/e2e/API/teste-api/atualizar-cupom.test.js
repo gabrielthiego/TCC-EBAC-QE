@@ -1,8 +1,8 @@
 const request = require('supertest');
 
 const auth = {
-  user: 'admin_ebac',
-  pass: '@admin!&b@c!2022',
+  user: 'ebactcc',
+  pass: 'ebactcc',
 };
 
 const api = request('http://localhost/wp-json/wc/v3');

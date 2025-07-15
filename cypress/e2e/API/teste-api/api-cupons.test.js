@@ -1,5 +1,5 @@
 const request = require('supertest')('http://localhost');
-const auth = { user: 'admin_ebac', pass: '@admin!&b@c!2022' };
+const auth = { user: 'ebactcc', pass: 'ebactcc' };
 
 describe('API Cupom', () => {
   let cupomId;

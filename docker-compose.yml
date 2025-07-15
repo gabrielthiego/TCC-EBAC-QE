@@ -1,36 +1,35 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  db:
-    image: mysql:5.7
-    container_name: wp_db
-    restart: always
-    environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wp_user
-      MYSQL_PASSWORD: wp_pass
-      MYSQL_ROOT_PASSWORD: root
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
 
   wordpress:
     image: wordpress:latest
-    container_name: wp_app
+    container_name: tcc-ebac-wordpress
+    ports:
+      - "8000:80"  # Acessa WP no http://localhost:8000
     restart: always
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+      JWT_AUTH_SECRET_KEY: "ck_6d168c71248bdc44dc270d1c37b7bd47299a76d8"
+    volumes:
+      - ./wordpress:/var/www/html  # Código WP local
     depends_on:
       - db
-    ports:
-      - "80:80"
+
+  db:
+    image: mysql:5.7
+    container_name: tcc-ebac-mysql
+    restart: always
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DB_USER: wp_user
-      WORDPRESS_DB_PASSWORD: wp_pass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpass  # SENHA ROOT DO MYSQL
     volumes:
-      - wp_data:/var/www/html
+      - tcc-ebac-db_data:/var/lib/mysql  # Volume explícito e nomeado para dados do MySQL
 
 volumes:
-  db_data:
-  wp_data:
+  tcc-ebac-db_data:
